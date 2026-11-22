@@ -1,74 +1,52 @@
-# CashAPI
+# cashmaal-payment-form
 
-## Overview
-CashAPI is a simple Flask application that facilitates online payments by integrating with the Cash-Maal payment gateway. Users can fill out a payment form, and the application will handle the submission and forwarding of payment details to the Cash-Maal API.
+A minimal Flask app that shows a payment form and forwards the submitted fields to the Cash-Maal payment gateway.
+
+## Status
+
+Demo quality. It is a single-file prototype: the form values are hard-coded in the template (placeholder email, URLs, order id), there is no validation, no order storage and no signature or callback handling. It also forwards the incoming request headers to the gateway and returns the gateway response body as-is. Do not use it in production as it is.
 
 ## Features
-- **Payment Form**: A user-friendly form for collecting payment details.
-- **API Integration**: Sends payment data to the Cash-Maal payment gateway.
-- **Response Handling**: Displays success or error messages based on the API response.
 
-## Installation
-To run the application locally, follow these steps:
+- One page (`/`) with a form: payment method, amount (100 or 200), currency (PKR or USD).
+- On submit, builds a payload (`pay_method`, `amount`, `currency`, `success_url`, `cancel_url`, `client_email`, `web_id`, `order_id`, `addi_info`) and POSTs it to `https://www.cashmaal.com/Pay/`.
+- Returns "Success! Response: ..." for HTTP 200 and "Error! Status Code: ..." otherwise.
 
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/faisal-fida/cashAPI.git
-    cd cashAPI
-    ```
+## Tech stack
 
-2. Create and activate a virtual environment:
-    ```sh
-    python3 -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
+Python, Flask, Requests.
 
-3. Install the required packages:
-    ```sh
-    pip install -r requirements.txt
-    ```
+## Structure
 
-4. Run the application:
-    ```sh
-    flask run
-    ```
+```
+app.py               Flask app and the POST to the gateway
+templates/index.html Payment form
+requirements.txt
+```
 
-## How It Works
-1. **Form Submission**: Users fill out the payment form on the `/` route.
-2. **Data Preparation**: The form data is collected and prepared for a POST request.
-3. **API Request**: A POST request is sent to the Cash-Maal payment gateway with the payment details.
-4. **Response Handling**: The application handles the API response, displaying a success message if the payment is processed or an error message if it fails.
+## Setup and run
 
-## Complexities and Challenges
+Requirements: Python 3.9+.
 
-### Data Preparation
-- **Complexity**: Ensuring that all required form fields are collected and properly formatted for the API request.
-- **Solution**: Implemented robust form handling and data preparation functions to ensure data integrity.
+```sh
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py        # http://127.0.0.1:5000, debug mode on
+```
 
-### API Integration
-- **Complexity**: Integrating with an external payment gateway and handling various API responses.
-- **Solution**: Used the `requests` library to manage API calls and implemented error handling to provide user-friendly feedback.
-
-### Security
-- **Complexity**: Safeguarding sensitive payment information during form submission and API requests.
-- **Solution**: Ensured that sensitive data like email and payment details are transmitted securely.
+No environment variables are used. To make it real you need to replace the hidden form values in `templates/index.html` (`web_id`, `order_id`, `client_email`, `success_url`, `cancel_url`) with your own Cash-Maal merchant details.
 
 ## Usage
-1. Start the Flask application.
-2. Navigate to `http://127.0.0.1:5000/` in your web browser.
-3. Fill out the payment form and submit.
-4. View the success or error message based on the API response.
 
-## Future Work
-- **Expand Payment Options**: Integrate additional payment methods and gateways.
-- **Enhanced Security**: Implement HTTPS and additional security measures.
-- **User Authentication**: Add user authentication and authorization features.
+Open `http://127.0.0.1:5000/`, pick the options and press "Pay With Cash-Maal". The gateway reply is shown as plain text.
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request if you have suggestions for improvements or new features.
+## Limitations
+
+- Debug mode is enabled in `app.py`; turn it off for any deployment.
+- Prints request headers to the console.
+- Untested against a live merchant account.
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
-## Contact
-For questions or comments, please contact [Faisal Fida](https://github.com/faisal-fida).
+MIT, see `LICENSE`.
